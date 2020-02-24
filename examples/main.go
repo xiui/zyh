@@ -1,6 +1,8 @@
 package main
 
-import "github.com/xiui/zyh"
+import (
+	"github.com/xiui/zyh"
+)
 
 func main() {
 

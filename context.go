@@ -70,6 +70,12 @@ func (ctx *Context) FileValues() ([]File, error) {
 
 }
 
+//判断参数中是否有某个key
+func (ctx *Context) HasParamsKey(key string) bool {
+	_, has := ctx.Params[key]
+	return has
+}
+
 func (ctx *Context) Next() {
 
 	if ctx.currentMethodIndex < len(ctx.handlers) {
