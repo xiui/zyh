@@ -117,6 +117,15 @@ func (ctx *Context) JSON(code int, data interface{}) {
 
 }
 
+//返回普通文本
+func (ctx *Context) String(code int, data string) {
+	ctx.w.WriteHeader(code)
+	_, err := ctx.w.Write([]byte(data))
+	if err != nil {
+		writeLog("context.go->String, 返回失败: " + err.Error())
+	}
+}
+
 func (ctx *Context) Request() *http.Request {
 	return ctx.r
 }

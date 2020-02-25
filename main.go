@@ -87,6 +87,13 @@ func (engine *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func (engine *Engine) Group(path string) Group {
+	return Group{
+		path:path,
+		engine: engine,
+	}
+}
+
 /**
 	path: 接口路径 "/test"
 	handles: 实现方法, 如果数量大于 1, 则会自动取消掉 Use 设置的 middleware
@@ -107,8 +114,8 @@ func (engine *Engine) registerHandleTree(method string, path string, handles ...
 
 	var handerTree []HanderFunc
 
-	//如果多余两个方法, 就不要使用全局的中间函数
-	if len(handles) == 1 && engine.middleware != nil {
+	//添加
+	if engine.middleware != nil {
 		handerTree = append(handerTree, engine.middleware)
 	}
 
