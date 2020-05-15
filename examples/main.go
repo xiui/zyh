@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/xiui/zyh"
 )
 
@@ -16,7 +17,10 @@ func main() {
 	})
 
 	r.Use(func(ctx *zyh.Context) {
-		ctx.String(200, "r.middle ")
+		ctx.String(200, "r.middle1 ")
+		ctx.Next()
+	}, func(ctx *zyh.Context) {
+		ctx.String(200, "r.middle2 ")
 		ctx.Next()
 	})
 
@@ -34,12 +38,23 @@ func main() {
 	g2 := r.Group("/v2")
 
 	g2.Use(func(ctx *zyh.Context) {
-		ctx.String(200, "g2.middle ")
+		ctx.String(200, "g2.middle1 \n")
+		ctx.Next()
+	}, func(ctx *zyh.Context) {
+		ctx.String(200, "g2.middle2 \n")
 		ctx.Next()
 	})
 
 	g2.GET("/test", func(ctx *zyh.Context) {
-		ctx.String(200, "g2.get")
+		ctx.String(200, "g2.get1\n")
+
+		fmt.Println("g2.get1")
+		ctx.Next()
+
+	}, func(ctx *zyh.Context) {
+		ctx.String(200, "g2.get2")
+		fmt.Println("g2.get2")
+
 	})
 
 

@@ -1,11 +1,13 @@
 package zyh
 
-import "net/http"
+import (
+	"net/http"
+)
 
 type Group struct {
 	path string
 	engine *Engine
-	middleware HanderFunc
+	middlewares []HanderFunc
 }
 
 /**
@@ -31,17 +33,14 @@ func (group *Group) registerHandleTree(method string, path string, handles ...Ha
 	var handerTree []HanderFunc
 
 	//先添加 engine 的中间函数
-	if group.engine.middleware != nil {
-		handerTree = append(handerTree, group.engine.middleware)
-	}
+	handerTree = append(handerTree, group.engine.middlewares...)
 
 	//再添加 group 的中间函数
-	if group.middleware != nil {
-		handerTree = append(handerTree, group.middleware)
-	}
+	handerTree = append(handerTree, group.middlewares...)
 
-	for i := len(handles) - 1; i >= 0; i -- {
-		handerTree = append(handerTree, handles[i])
+
+	for _, handle := range handles {
+		handerTree = append(handerTree, handle)
 	}
 
 	if method == http.MethodPost {
@@ -52,6 +51,7 @@ func (group *Group) registerHandleTree(method string, path string, handles ...Ha
 
 }
 
-func (group *Group) Use(middleware HanderFunc) {
-	group.middleware = middleware
+//调用直接覆盖之前设置的, 但是调用之前的 POST,GET 等, 都使用了之前设置的
+func (group *Group) Use(middlewares ...HanderFunc) {
+	group.middlewares = middlewares
 }

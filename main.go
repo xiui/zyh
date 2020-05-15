@@ -11,7 +11,7 @@ func Default() *Engine {
 
 type Engine struct {
 
-	middleware HanderFunc
+	middlewares []HanderFunc
 
 	postMethodTrees map[string][]HanderFunc
 	getMethodTrees map[string][]HanderFunc
@@ -114,10 +114,9 @@ func (engine *Engine) registerHandleTree(method string, path string, handles ...
 
 	var handerTree []HanderFunc
 
-	//添加
-	if engine.middleware != nil {
-		handerTree = append(handerTree, engine.middleware)
-	}
+	//添加中间函数
+	handerTree = append(handerTree, engine.middlewares...)
+
 
 	for i := len(handles) - 1; i >= 0; i -- {
 		handerTree = append(handerTree, handles[i])
@@ -131,8 +130,9 @@ func (engine *Engine) registerHandleTree(method string, path string, handles ...
 
 }
 
-func (engine *Engine) Use(middleware HanderFunc) {
-	engine.middleware = middleware
+//调用直接覆盖之前设置的, 但是调用之前的 POST,GET 等, 都使用了之前设置的
+func (engine *Engine) Use(middlewares ...HanderFunc) {
+	engine.middlewares = middlewares
 }
 
 

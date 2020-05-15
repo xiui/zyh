@@ -78,7 +78,10 @@ func (ctx *Context) HasParamsKey(key string) bool {
 
 func (ctx *Context) Next() {
 
-	if ctx.currentMethodIndex < len(ctx.handlers) {
+
+	//因为ctx.currentMethodIndex 初始化的时候设置的是 -1
+	//每次 if 中会先 +1, 所以这里判断条件的时候用了 len(ctx.handlers) - 1, 防止超出数组
+	if ctx.currentMethodIndex < len(ctx.handlers) - 1 {
 
 		//加一, 方法树会继续调用, 调用时走下一个方法
 		ctx.currentMethodIndex ++
@@ -87,6 +90,7 @@ func (ctx *Context) Next() {
 
 	} else {
 		//TODO: 这里需要考虑怎么处理, 方法超出了的问题
+		writeLog("函数调用次数超出 handlers 中设置的方法, 请查看 ctx.Next() 调用情况, 如果是逻辑中最后一个方法, 不需要调用 ctx.Next()方法")
 	}
 
 }
