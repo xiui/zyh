@@ -16,7 +16,7 @@ func main() {
 		})
 	})
 
-	r.Use(func(ctx *zyh.Context) {
+	r.UseMiddleware(func(ctx *zyh.Context) {
 		ctx.String(200, "r.middle1 ")
 		ctx.Next()
 	}, func(ctx *zyh.Context) {
@@ -24,9 +24,14 @@ func main() {
 		ctx.Next()
 	})
 
+	r.AddMiddleware(func(ctx *zyh.Context) {
+		ctx.String(200, "r.middle add 1 ")
+		ctx.Next()
+	})
+
 	g := r.Group("/v1")
 
-	g.Use(func(ctx *zyh.Context) {
+	g.UseMiddleware(func(ctx *zyh.Context) {
 		ctx.String(200, "g.middle ")
 		ctx.Next()
 	})
@@ -37,7 +42,7 @@ func main() {
 
 	g2 := r.Group("/v2")
 
-	g2.Use(func(ctx *zyh.Context) {
+	g2.UseMiddleware(func(ctx *zyh.Context) {
 		ctx.String(200, "g2.middle1 \n")
 		ctx.Next()
 	}, func(ctx *zyh.Context) {

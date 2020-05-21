@@ -131,9 +131,16 @@ func (engine *Engine) registerHandleTree(method string, path string, handles ...
 }
 
 //调用直接覆盖之前设置的, 但是调用之前的 POST,GET 等, 都使用了之前设置的
-func (engine *Engine) Use(middlewares ...HanderFunc) {
+func (engine *Engine) UseMiddleware(middlewares ...HanderFunc) {
 	engine.middlewares = middlewares
 }
+
+//添加新的中间件, 之前的会保留, 只对后面发 POST, GET 方法起作用
+func (engine *Engine) AddMiddleware(middlewares ...HanderFunc) {
+	engine.middlewares = append(engine.middlewares, middlewares...)
+}
+
+
 
 
 func (engine *Engine) Run(port string) error {

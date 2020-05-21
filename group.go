@@ -52,6 +52,11 @@ func (group *Group) registerHandleTree(method string, path string, handles ...Ha
 }
 
 //调用直接覆盖之前设置的, 但是调用之前的 POST,GET 等, 都使用了之前设置的
-func (group *Group) Use(middlewares ...HanderFunc) {
+func (group *Group) UseMiddleware(middlewares ...HanderFunc) {
 	group.middlewares = middlewares
+}
+
+//添加新的中间件, 之前的会保留, 只对后面发 POST, GET 方法起作用
+func (group *Group) AddMiddleware(middlewares ...HanderFunc) {
+	group.middlewares = append(group.middlewares, middlewares...)
 }
