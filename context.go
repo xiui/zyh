@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"mime/multipart"
 	"net/http"
+	"strconv"
 )
 
 type File struct {
@@ -39,6 +40,40 @@ func (ctx *Context) Value(key string) string {
 	val := ctx.r.FormValue(key)
 
 	return val
+}
+
+func (ctx *Context) ValueInt(key string) (int, error) {
+
+	val := ctx.r.FormValue(key)
+
+	valInt, err := strconv.ParseInt(val, 10, 64)
+
+	return int(valInt), err
+}
+
+func (ctx *Context) ValueUint(key string) (int, error) {
+
+	val := ctx.r.FormValue(key)
+
+	valInt, err := strconv.ParseUint(val, 10, 64)
+
+	return int(valInt), err
+}
+
+func (ctx *Context) ValueFloat(key string) (float64, error) {
+
+	val := ctx.r.FormValue(key)
+
+	return strconv.ParseFloat(val, 64)
+
+}
+
+func (ctx *Context) ValueBool(key string) (bool, error) {
+
+	val := ctx.r.FormValue(key)
+
+	return strconv.ParseBool(val)
+
 }
 
 func (ctx *Context) FileValues() ([]File, error) {
