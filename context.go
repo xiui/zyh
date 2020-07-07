@@ -168,3 +168,7 @@ func (ctx *Context) String(code int, data string) {
 func (ctx *Context) Request() *http.Request {
 	return ctx.r
 }
+
+func (ctx *Context) ResponseWriter() http.ResponseWriter {
+	return ctx.w
+}
