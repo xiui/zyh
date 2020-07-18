@@ -111,6 +111,19 @@ func (ctx *Context) HasParamsKey(key string) bool {
 	return has
 }
 
+//判断一个参数是否是空的, 没有此字段/空字符串/0
+func (ctx *Context) IsEmpty(key string) bool {
+
+	if !ctx.HasParamsKey(key) {
+		return true
+	}
+	v := ctx.Value(key)
+	if v == "" || v == "0" {
+		return true
+	}
+	return false
+}
+
 func (ctx *Context) Next() {
 
 
