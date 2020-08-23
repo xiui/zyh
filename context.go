@@ -178,6 +178,11 @@ func (ctx *Context) String(code int, data string) {
 	}
 }
 
+//更新 request, 替换相关信息
+func (ctx *Context) RefreshRequest(newR *http.Request) {
+	ctx.r = newR
+}
+
 func (ctx *Context) Request() *http.Request {
 	return ctx.r
 }
