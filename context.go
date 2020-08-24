@@ -76,6 +76,67 @@ func (ctx *Context) ValueBool(key string) (bool, error) {
 
 }
 
+func (ctx *Context) ValueIfHas(key string) (string, bool) {
+
+	if !ctx.HasParamsKey(key) {
+		return "", false
+	}
+	return ctx.r.FormValue(key), true
+}
+
+
+func (ctx *Context) ValueIntIfHas(key string) (int, bool, error) {
+
+	if !ctx.HasParamsKey(key) {
+		return 0, false, nil
+	}
+
+	val := ctx.r.FormValue(key)
+
+	valInt, err := strconv.ParseInt(val, 10, 64)
+
+	return int(valInt), true, err
+}
+
+func (ctx *Context) ValueUintIfHas(key string) (int, bool, error) {
+
+	if !ctx.HasParamsKey(key) {
+		return 0, false, nil
+	}
+
+	val := ctx.r.FormValue(key)
+
+	valInt, err := strconv.ParseUint(val, 10, 64)
+
+	return int(valInt), true, err
+}
+
+func (ctx *Context) ValueFloatIfHas(key string) (float64, bool, error) {
+
+	if !ctx.HasParamsKey(key) {
+		return 0, false, nil
+	}
+
+	val := ctx.r.FormValue(key)
+
+	valFloat, err := strconv.ParseFloat(val, 64)
+	return valFloat, true, err
+
+}
+
+func (ctx *Context) ValueBoolIfHas(key string) (bool, bool, error) {
+
+	if !ctx.HasParamsKey(key) {
+		return false, false, nil
+	}
+
+	val := ctx.r.FormValue(key)
+
+	valBool, err := strconv.ParseBool(val)
+	return valBool, true, err
+
+}
+
 func (ctx *Context) FileValues() ([]File, error) {
 
 	var newFiles []File
