@@ -9,21 +9,11 @@ func main() {
 
 	r := zyh.Default()
 
+
+
 	r.GET("/test", func(ctx *zyh.Context) {
 
-		newR := ctx.Request()
-		newR.Form =  map[string][]string{"abc": {"abc"}}
-		ctx.RefreshRequest(newR)
-
-		fmt.Println(ctx.Value("abc"))
-
-
-		fmt.Println("url:", ctx.Request().URL)
-
-
-		ctx.JSON(200, map[string]string{
-			"msg":"ok",
-		})
+		ctx.Redirect("https://www.baidu.com", 302)
 	})
 
 	r.POST("/test", func(ctx *zyh.Context) {

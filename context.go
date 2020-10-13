@@ -251,3 +251,8 @@ func (ctx *Context) Request() *http.Request {
 func (ctx *Context) ResponseWriter() http.ResponseWriter {
 	return ctx.w
 }
+
+//重定向
+func (ctx *Context) Redirect(url string, code int) {
+	http.Redirect(ctx.w, ctx.r, url, code)
+}
