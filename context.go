@@ -5,6 +5,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type File struct {
@@ -242,6 +243,44 @@ func (ctx *Context) String(code int, data string) {
 //更新 request, 替换相关信息
 func (ctx *Context) RefreshRequest(newR *http.Request) {
 	ctx.r = newR
+
+	contentType := ctx.r.Header["Content-Type"]
+	isUploadFile := false
+
+	for _, v := range contentType {
+
+		//判断是不是传文件
+		if strings.Index(v, "multipart/form-data") >= 0 {
+			isUploadFile = true
+			break
+		}
+	}
+
+	var err error
+	if isUploadFile {
+		err = ctx.r.ParseMultipartForm(32 << 20)
+	} else {
+		err = ctx.r.ParseForm()
+	}
+
+
+	if err != nil {
+		ctx.w.WriteHeader(500)
+		ctx.w.Write([]byte("params analysis is wrong"))
+		return
+	}
+
+
+	params := map[string]string{}
+	for k, value := range ctx.r.Form {
+		if len(value) > 0 {
+			//重名的参数只取第一个, 尽量不要使用同名参数
+			params[k] = value[0]
+		}
+	}
+
+	ctx.Params = params
+
 }
 
 func (ctx *Context) Request() *http.Request {

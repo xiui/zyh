@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/xiui/zyh"
+	"time"
 )
 
 func main() {
@@ -18,19 +19,9 @@ func main() {
 
 	r.POST("/test", func(ctx *zyh.Context) {
 
-		newR := ctx.Request()
-		newR.Form =  map[string][]string{"abc": {"abc"}}
-		ctx.RefreshRequest(newR)
-
-		fmt.Println(ctx.Value("abc"))
+		fmt.Println(ctx.Params)
 
 
-		fmt.Println("url:", ctx.Request().URL)
-
-
-		ctx.JSON(200, map[string]string{
-			"msg":"ok",
-		})
 	})
 
 	r.UseMiddleware(func(ctx *zyh.Context) {
@@ -43,13 +34,17 @@ func main() {
 
 	r.AddMiddleware(func(ctx *zyh.Context) {
 		ctx.String(200, "r.middle add 1 ")
+
+		fmt.Println(time.Now().Unix())
 		ctx.Next()
+		fmt.Println(time.Now().Unix())
 	})
 
 	g := r.Group("/v1")
 
 	g.UseMiddleware(func(ctx *zyh.Context) {
 		ctx.String(200, "g.middle ")
+		time.Sleep(5 * time.Second)
 		ctx.Next()
 	})
 

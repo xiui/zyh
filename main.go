@@ -61,6 +61,12 @@ func (engine *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		//fmt.Println(r.Form)
+		/*
+		map[hello[age]:[12] hello[sex][a]:[a] hello[sex][b][]:[b b] names[]:[1234] sign:[188e8f6b1c80ad9d864530be838d4207]]
+		map[hello[age]:12 hello[sex][a]:a hello[sex][b][]:b names[]:1234 sign:188e8f6b1c80ad9d864530be838d4207]
+		 */
+
 		params := map[string]string{}
 		for k, value := range r.Form {
 			if len(value) > 0 {
