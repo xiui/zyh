@@ -14,7 +14,16 @@ func main() {
 
 	r.GET("/test", func(ctx *zyh.Context) {
 
-		ctx.Redirect("https://www.baidu.com", 302)
+
+		r := ctx.Request()
+		newForm := r.Form
+		newForm["abc"] = []string{"123456"}
+		r.Form = newForm
+
+		ctx.RefreshRequest(r)
+
+		fmt.Println(ctx.ValueInt("abc"))
+
 	})
 
 	r.POST("/test", func(ctx *zyh.Context) {

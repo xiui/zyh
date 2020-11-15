@@ -2,7 +2,6 @@ package zyh
 
 import (
 	"net/http"
-	"strings"
 )
 
 func Default() *Engine {
@@ -34,63 +33,15 @@ func (engine *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if hadMethodTree {
 
-		var err error
-
-		contentType := r.Header["Content-Type"]
-		isUploadFile := false
-
-		for _, v := range contentType {
-
-			//判断是不是传文件
-			if strings.Index(v, "multipart/form-data") >= 0 {
-				isUploadFile = true
-				break
-			}
+		ctx := createContext(w, r, methodTree)
+		if ctx != nil {
+			ctx.Next()
 		}
-
-		if isUploadFile {
-			err = r.ParseMultipartForm(32 << 20)
-		} else {
-			err = r.ParseForm()
-		}
-
-
-		if err != nil {
-			w.WriteHeader(500)
-			w.Write([]byte("params analysis is wrong"))
-			return
-		}
-
-		//fmt.Println(r.Form)
-		/*
-		map[hello[age]:[12] hello[sex][a]:[a] hello[sex][b][]:[b b] names[]:[1234] sign:[188e8f6b1c80ad9d864530be838d4207]]
-		map[hello[age]:12 hello[sex][a]:a hello[sex][b][]:b names[]:1234 sign:188e8f6b1c80ad9d864530be838d4207]
-		 */
-
-		params := map[string]string{}
-		for k, value := range r.Form {
-			if len(value) > 0 {
-				//重名的参数只取第一个, 尽量不要使用同名参数
-				params[k] = value[0]
-			}
-		}
-
-		ctx := &Context{
-			handlers: methodTree,
-			r: r,
-			w: w,
-			currentMethodIndex: -1,	//调用方法树时, 会提前加一, 所以在这里设置了-1
-			Params: params,
-		}
-
-		ctx.Next()
 	} else {
 		w.WriteHeader(404)
 		w.Write([]byte("not this method"))
 
 	}
-
-
 }
 
 func (engine *Engine) Group(path string) Group {

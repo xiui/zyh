@@ -24,6 +24,57 @@ type Context struct {
 
 }
 
+func createContext(w http.ResponseWriter, r *http.Request, methodTree []HanderFunc) *Context {
+
+	var err error
+
+	contentType := r.Header["Content-Type"]
+	isUploadFile := false
+
+	for _, v := range contentType {
+
+		//判断是不是传文件
+		if strings.Index(v, "multipart/form-data") >= 0 {
+			isUploadFile = true
+			break
+		}
+	}
+
+	if isUploadFile {
+		err = r.ParseMultipartForm(32 << 20)
+	} else {
+		err = r.ParseForm()
+	}
+
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte("params analysis is wrong"))
+		return nil
+	}
+
+	//fmt.Println(r.Form)
+	/*
+	map[hello[age]:[12] hello[sex][a]:[a] hello[sex][b][]:[b b] names[]:[1234] sign:[188e8f6b1c80ad9d864530be838d4207]]
+	map[hello[age]:12 hello[sex][a]:a hello[sex][b][]:b names[]:1234 sign:188e8f6b1c80ad9d864530be838d4207]
+	 */
+
+	params := map[string]string{}
+	for k, value := range r.Form {
+		if len(value) > 0 {
+			//重名的参数只取第一个, 尽量不要使用同名参数
+			params[k] = value[0]
+		}
+	}
+
+	return &Context{
+		handlers: methodTree,
+		r: r,
+		w: w,
+		currentMethodIndex: -1,	//调用方法树时, 会提前加一, 所以在这里设置了-1
+		Params: params,
+	}
+}
+
 func (ctx *Context) ValueWithDefault(key string, defaultValue string) string {
 
 	val := ctx.r.FormValue(key)
@@ -242,45 +293,7 @@ func (ctx *Context) String(code int, data string) {
 
 //更新 request, 替换相关信息
 func (ctx *Context) RefreshRequest(newR *http.Request) {
-	ctx.r = newR
-
-	contentType := ctx.r.Header["Content-Type"]
-	isUploadFile := false
-
-	for _, v := range contentType {
-
-		//判断是不是传文件
-		if strings.Index(v, "multipart/form-data") >= 0 {
-			isUploadFile = true
-			break
-		}
-	}
-
-	var err error
-	if isUploadFile {
-		err = ctx.r.ParseMultipartForm(32 << 20)
-	} else {
-		err = ctx.r.ParseForm()
-	}
-
-
-	if err != nil {
-		ctx.w.WriteHeader(500)
-		ctx.w.Write([]byte("params analysis is wrong"))
-		return
-	}
-
-
-	params := map[string]string{}
-	for k, value := range ctx.r.Form {
-		if len(value) > 0 {
-			//重名的参数只取第一个, 尽量不要使用同名参数
-			params[k] = value[0]
-		}
-	}
-
-	ctx.Params = params
-
+	ctx = createContext(ctx.w, newR, ctx.handlers)
 }
 
 func (ctx *Context) Request() *http.Request {
