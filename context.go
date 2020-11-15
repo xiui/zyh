@@ -293,7 +293,11 @@ func (ctx *Context) String(code int, data string) {
 
 //更新 request, 替换相关信息
 func (ctx *Context) RefreshRequest(newR *http.Request) {
-	ctx = createContext(ctx.w, newR, ctx.handlers)
+
+	newCtx := createContext(ctx.w, newR, ctx.handlers)
+
+	ctx.Params = newCtx.Params
+	ctx.r = newCtx.r
 }
 
 func (ctx *Context) Request() *http.Request {

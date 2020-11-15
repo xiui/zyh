@@ -17,12 +17,16 @@ func main() {
 
 		r := ctx.Request()
 		newForm := r.Form
-		newForm["abc"] = []string{"123456"}
+		newForm["type_id"] = []string{"2"}
 		r.Form = newForm
 
+		fmt.Println(ctx.Params)
 		ctx.RefreshRequest(r)
 
-		fmt.Println(ctx.ValueInt("abc"))
+
+		fmt.Println(ctx.Params)
+
+		fmt.Println(ctx.Value("type_id"))
 
 	})
 
